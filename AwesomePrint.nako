@@ -1,0 +1,111 @@
+●母艦設計
+	母艦の可視 = 0
+
+hとはハッシュ
+arrayとは配列
+h@value = "1,2,3"を","で区切る
+h@hoge = 2
+h@string = "hoge"
+
+h2とはハッシュ
+h2@a = "A"
+h2@b = "B"
+h2@c = "C"
+
+a2 = 『[{"a":1},{"b":2}]』をJSONデコード
+h@"HashInArray" = a2
+h@"MultiLineString" = 『おはよう
+いや、こんにちはかな。
+ここにいるとどうも改行がわからなくてね。』
+
+h@"h2" = h2
+
+awesomeJson = Print(h,-1)
+awesomeJsonをメモ記入
+
+//json = Deformat(awesomeJson)
+
+終了
+
+●Deformat(formattedJson)
+	正規表現修飾子 = "m"
+	formattedJson = formattedJsonの『^\s+』を""へ正規表現置換
+	formattedJson = formattedJsonの『:\s+』を":"へ正規表現置換
+	formattedJson = formattedJsonの改行を""に置換
+	formattedJsonで戻る
+
+●Print(object, indent)
+	spaces = GetSpaces(indent)
+	type = objectの変数型確認
+	string = ""
+	もし、type=="ハッシュ"ならば、
+		string = string & PrintHash(object, indent+1)
+	違えば、もし、type=="配列"ならば、
+		string = string & PrintArray(object, indent+1)
+	違えば、もし、type=="文字列"ならば、
+		string = string & spaces & 『"』 & valueの改行を"\n"に置換 & 『"』 & 改行
+	違えば、もし、type=="NIL"ならば、
+		string = string & spaces & "null" & 改行
+	違えば、
+		string = string & spaces & value & 改行
+	ここまで
+	stringで戻る
+
+●PrintHash(hash, indent)
+	string = 『{』 & 改行
+    hashのハッシュキー列挙を反復
+		key = それ
+		type = hash@keyの変数型確認
+		value = hash@key
+		keyExp = 『  "』 & key & 『": 』
+		もし、type=="ハッシュ"ならば、
+			string = string & keyExp & PrintHash(value, indenx + 1) & ",{改行}"
+		違えば、もし、type=="配列"ならば、
+			string = string & keyExp & PrintArray(value, index + 1) & ",{改行}"
+		違えば、もし、type=="文字列"ならば、
+			s = valueの改行を"\n"に置換
+			string = string & keyExp & 『"』 & s & 『"』 & ",{改行}"
+		違えば、
+			string = string & keyExp & value & ",{改行}"
+		ここまで
+    ここまで
+    string = string & 『}』 & 改行
+    AddIndent(string, indent)で戻る
+
+●PrintArray(array, indent)
+	string = "[" & 改行
+	arrayを反復
+		value = それ
+		type = valueの変数型確認
+		もし、type=="ハッシュ"ならば、
+			string = string & PrintHash(value, indenx + 1) & ",{改行}"
+		違えば、もし、type=="配列"ならば、
+			string = string & PrintArray(value, index + 1) & ",{改行}"
+		違えば、もし、type=="文字列"ならば、
+			string = string & 『"』 & value & 『"』 & ",{改行}"
+		違えば、
+			string = string & value & ",{改行}"
+		ここまで
+	
+		//string = string & "  " & それ & "," & 改行
+	ここまで
+	stringから3文字右端削除
+	string = string & 改行
+	string = string & "]"
+	AddIndent(string, indent)で戻る
+
+●GetSpaces(indent)
+	spaces = ""
+	indent回
+		spaces = spaces & "  "
+	ここまで
+	spacesで戻る
+
+●AddIndent(string, indent)
+	spaces = GetSpaces(indent)
+	retとは文字列
+	stringを改行で区切って反復
+		ret = ret & spaces & それ & 改行
+	ここまで
+	retから2文字右端削除
+	retで戻る
