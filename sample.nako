@@ -1,0 +1,39 @@
+!"PrettyJson.nako"を取り込み
+
+●母艦設計
+	母艦の可視 = 0
+
+formattedJson = 『{
+  "hash": {
+    "a": "A",
+    "b": "B",
+    "c": "C",
+  },
+  "array": [
+    1,
+    2,
+    3
+  ],
+  "hashInArray": [
+    {
+      "a": 1,
+    },
+    {
+      "b": 2,
+    }
+  ],
+  "multiLineString": "おはよう\nいや、こんにちはかな。\nここにいるとどうも改行がわからなくてね。",
+  "string": "hoge",
+  "number": 2,
+  "null": null
+}』
+
+formattedJson = formattedJsonを"SJIS"から"UTF8"へ文字コード変換
+
+json = DeformatPrettyJson(formattedJson)
+hash = formattedJsonをJSONデコード
+
+awesomeJson = PrettyPrint(hash)
+awesomeJsonをメモ記入
+
+終了
