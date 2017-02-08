@@ -1,0 +1,125 @@
+●母艦設計
+	母艦の可視 = 0
+
+formattedJson = 『{
+  "hash": {
+    "a": "A",
+    "b": "B",
+    "c": "C",
+  },
+  "array": [
+    1,
+    2,
+    3
+  ],
+  "hashInArray": [
+    {
+      "a": 1,
+    },
+    {
+      "b": 2,
+    }
+  ],
+  "multiLineString": "おはよう\nいや、こんにちはかな。\nここにいるとどうも改行がわからなくてね。",
+  "string": "hoge",
+  "number": 2,
+  "null": null
+}』
+
+formattedJson = formattedJsonを"SJIS"から"UTF8"へ文字コード変換
+
+json = DeformatPrettyJson(formattedJson)
+hash = formattedJsonをJSONデコード
+
+awesomeJson = PrettyPrint(hash)
+awesomeJsonをメモ記入
+
+終了
+
+// PrettyJson形式を元に戻すための関数
+// "JSONデコード"でも空白や改行を考慮してくれるので、あんまり存在価値ない
+●DeformatPrettyJson(formattedJson)
+	regExOrigin = 正規表現修飾子
+	正規表現修飾子 = "m"
+	formattedJson = formattedJsonの『^\s+』を""へ正規表現置換
+	formattedJson = formattedJsonの『:\s+』を":"へ正規表現置換
+	formattedJson = formattedJsonの改行を""に置換
+	正規表現修飾子 = regExOrigin
+	formattedJsonで戻る
+
+●PrettyPrint(object)
+	string = ""
+	objectの変数型確認で条件分岐
+		"ハッシュ"ならば
+			string = string & PrettyPrintHash(object) & 改行
+		"配列"ならば
+			string = string & PrettyPrintArray(object) & 改行
+		"文字列"ならば
+			string = string & spaces & 『"』 & valueの改行を"\n"に置換 & 『"』 & 改行
+		"NIL"ならば
+			string = string & spaces & "null" & 改行
+		違えば
+			string = string & spaces & value & 改行
+	ここまで
+	stringで戻る
+
+●PrettyPrintHash(hash)
+	string = ""
+    hashのハッシュキー列挙を反復
+		key    = それ
+		value  = hash@key
+		keyExp = 『"』 & key & 『": 』
+		valueの変数型確認で条件分岐
+			"ハッシュ"ならば
+				string = string & keyExp & PrettyPrintHash(value) & ",{改行}"
+			"配列"ならば
+				string = string & keyExp & PrettyPrintArray(value) & ",{改行}"
+			"文字列"ならば
+				s = hash@keyの改行を"\n"に置換
+				string = string & keyExp & 『"』 & s & 『"』 & ",{改行}"
+			"NIL"ならば
+				string = string & keyExp & "null" & ",{改行}"
+			違えば
+				string = string & keyExp & value & ",{改行}"	
+		ここまで
+    ここまで
+    stringから3文字右端削除
+    string = 『{』 & 改行 & AddIndent(string, 1) & 改行 & 『}』
+    stringで戻る
+
+●PrettyPrintArray(array)
+	string = ""
+	arrayを反復
+		value = それ
+		valueの変数型確認で条件分岐
+		    "ハッシュ"ならば、
+				string = string & PrettyPrintHash(value) & ",{改行}"
+			"配列"ならば、
+				string = string & PrettyPrintArray(value) & ",{改行}"
+			"文字列"ならば、
+				string = string & 『"』 & value & 『"』 & ",{改行}"
+			"NIL"ならば、
+				string = string & "null" & ",{改行}"
+			違えば、
+				string = string & value & ",{改行}"
+		ここまで
+	ここまで
+	stringから3文字右端削除
+	string = 『[』 & 改行 & AddIndent(string, 1)  & 改行 & 『]』
+	stringで戻る
+
+●GetSpaces(indent)
+	spaces = ""
+	indent回
+		spaces = spaces & "  "
+	ここまで
+	spacesで戻る
+
+●AddIndent(string, indent)
+	spaces = GetSpaces(indent)
+	retとは文字列
+	stringを改行で区切って反復
+		ret = ret & spaces & それ & 改行
+	ここまで
+	retから2文字右端削除
+	retで戻る
